@@ -1,24 +1,42 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
 )
 
-//server.go
+const jsonContentType = "application/json"
 
 type PlayerStore interface {
 	GetPlayerScore(name string) int
 	RecordWin(name string)
+	GetLeague() []Player
 }
 type PlayerServer struct {
 	store PlayerStore
+	http.Handler
+}
+type Player struct {
+	Name string
+	Wins int
 }
 
-func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	player := strings.TrimPrefix(r.URL.Path, "/players/")
+func NewPlayerServer(store PlayerStore) *PlayerServer {
+	p := new(PlayerServer)
+	p.store = store
 
+	router := http.NewServeMux()
+	router.Handle("/league", http.HandlerFunc(p.LeagueHandler))
+
+	router.Handle("/players/", http.HandlerFunc(p.PlayersHandler))
+	p.Handler = router
+	return p
+}
+
+func (p *PlayerServer) PlayersHandler(w http.ResponseWriter, r *http.Request) {
+	player := strings.TrimPrefix(r.URL.Path, "/players/")
 	switch r.Method {
 	case http.MethodPost:
 		p.ProcessWin(w, player)
@@ -26,6 +44,10 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		p.ShowScore(w, player)
 
 	}
+}
+func (p *PlayerServer) LeagueHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", jsonContentType)
+	json.NewEncoder(w).Encode(p.store.GetLeague())
 }
 
 func (p *PlayerServer) ShowScore(w http.ResponseWriter, player string) {
