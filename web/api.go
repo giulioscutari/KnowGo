@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 type Server struct {
@@ -15,15 +17,15 @@ func NewServer(listenAddr string) *Server {
 
 func (s *Server) Run() any {
 	router := http.NewServeMux()
-	router.Handle("/document", http.HandlerFunc(s.HandleDocument))
+	router.Handle("/document/", http.HandlerFunc(s.HandleDocument))
 
 	return (http.ListenAndServe(s.listenAddr, router))
 }
 
-func WriteJSON(w http.ResponseWriter, status int, v any) {
+func WriteJSON(w http.ResponseWriter, status int, v any) any {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(v)
+	return json.NewEncoder(w).Encode(v)
 }
 
 func (s *Server) HandleDocument(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +40,9 @@ func (s *Server) HandleDocument(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) GetDocument(w http.ResponseWriter, r *http.Request) {
-	WriteJSON(w, 200, "GetDocument")
+	id, _ := strconv.Atoi(strings.TrimPrefix(r.URL.Path, "/document/"))
+	doc := NewDocument(id, "document title", "lorem. Ipsum. Wow. Test")
+	WriteJSON(w, http.StatusOK, doc)
 }
 
 func (s *Server) DeleteDocument(w http.ResponseWriter, r *http.Request) {
