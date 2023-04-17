@@ -21,8 +21,8 @@ func (s *Server) Run() any {
 }
 
 func WriteJSON(w http.ResponseWriter, status int, v any) {
-	w.WriteHeader(status)
-	w.Header().Set("content-type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(v)
 }
 
