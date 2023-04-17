@@ -1,4 +1,4 @@
 Also serves as notes
 https://quii.gitbook.io/learn-go-with-tests/
 Current progress: do this
-https://quii.gitbook.io/learn-go-with-tests/build-an-application/json#write-the-test-first-3
+https://quii.gitbook.io/learn-go-with-tests/build-an-application/io
