@@ -1,0 +1,22 @@
+version: "2"
+services:
+  web:
+    build: 
+      context: ./web
+    command: "sleep infinity"
+    volumes:
+      - ./web:/app
+    ports:
+      - 5000:5000
+  db:
+    image: postgres:15.2-bullseye
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=knowgo
+      - POSTGRES_DB=knowgo
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+volumes:
+  pg_data:
+    driver: local
