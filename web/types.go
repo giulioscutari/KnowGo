@@ -1,19 +1,30 @@
 package main
 
-import "strings"
+import (
+	"strings"
+	"time"
+)
 
-type Document struct {
-	Id         int      `json:"id"`
+type CreateDocumentRequest struct {
 	Title      string   `json:"title"`
 	Body       string   `json:"body"`
 	Paragraphs []string `json:"paragraphs"`
 }
 
-func NewDocument(id int, title, body string) *Document {
+type Document struct {
+	Id         int       `json:"id"`
+	Title      string    `json:"title"`
+	Body       string    `json:"body"`
+	Paragraphs []string  `json:"paragraphs"`
+	CreatedAt  time.Time `json:"created_at"`
+}
+
+func NewDocument(title, body string) *Document {
 	return &Document{
-		Id:         id,
+		// Id:         rand.Intn(10000),
 		Title:      title,
 		Body:       body,
 		Paragraphs: strings.Split(body, "."),
+		CreatedAt:  time.Now().UTC(),
 	}
 }
